@@ -8,27 +8,21 @@
 </head>
 <body class="font-sans bg-gray-100 text-gray-900">
     <?php
-    
-    
-
     include("dataClass.php");
-    //userid get karenge..
-    //shyd login backend se
-    $userloginid=$_SESSION["userId"] = $_GET['userid'];
-    
-    if (!$userloginid) {
-        echo "<div class='bg-red-100 text-red-800 border border-red-300 p-4 rounded-lg my-4 mx-4'>
-            User not logged in. Please log in to view your account.
-        </div>";
-        exit;
+    if (isset($_SESSION['userId'])) {
+        $userId = $_SESSION['userId'];
+    } else {
+
+        header("Location: login.php?msg=Login first");
+        exit();
     }
         
-        $msg = $_REQUEST['msg'] ?? '';
-        if ($msg === "done") {
-            echo "<div class='bg-green-100 text-green-800 border border-green-300 p-4 rounded-lg my-4 mx-4'>Action successfully completed!</div>";
-        } elseif ($msg === "fail") {
-            echo "<div class='bg-red-100 text-red-800 border border-red-300 p-4 rounded-lg my-4 mx-4'>Action failed!</div>";
-        }
+    $msg = $_REQUEST['msg'] ?? '';
+    if ($msg === "done") {
+        echo "<div class='bg-green-100 text-green-800 border border-green-300 p-4 rounded-lg my-4 mx-4'>Action successfully completed!</div>";
+    } elseif ($msg === "fail") {
+        echo "<div class='bg-red-100 text-red-800 border border-red-300 p-4 rounded-lg my-4 mx-4'>Action failed!</div>";
+    }
     ?>
     <div class="flex flex-col md:flex-row min-h-screen">
         <!-- Side -->
@@ -50,8 +44,8 @@
             <?php
 
             $u=new data;
-            $u->setconnection();
-            $recordset=$u->userdetail($userloginid);
+            $u->setConnection();
+            $recordset=$u->userdetail($userId);
             foreach($recordset as $row){
                 $id= $row[0];
                 $name= $row[1];
@@ -71,6 +65,50 @@
                 <a href="books.php"> REQUEST A BOOK</ahref>
 
             </div>
+            <div id="bookreport" class="hidden hidden-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                <Button class="bg-green-500 text-white px-4 py-2 rounded-md mb-4">BOOK RECORD</Button>
+                <?php
+                $u=new data;
+                $u->setConnection();
+                $u->getissuebook($userId);
+                $recordset=$u->getissuebook($userId);
+                
+                echo "<table class='min-w-full table-auto border-collapse border border-gray-300'>";
+                    echo "<th class='bg-gray-200'>
+                            <tr>
+                                <th class='px-6 py-4 text-left'>Name</th>
+                                <th class='px-6 py-4 text-left'>Book Name</th>
+                                <th class='px-6 py-4 text-left'>Issue Date</th>
+                                <th class='px-6 py-4 text-left'>Return Date</th>
+                                <th class='px-6 py-4 text-left'>Fine</th>
+                                <th class='px-6 py-4 text-left'>Return</th>
+                            </tr>
+                        </th>
+                        
+                    <tbody>";
+                    foreach ($recordset as $row) {
+                        echo "<tr class='border-b'>
+                                <td class='px-6 py-4'>{$row[0]}</td>
+                                <td class='px-6 py-4'>{$row[2]}</td>
+                                <td class='px-6 py-4'>{$row[3]}</td>
+                                <td class='px-6 py-4'>{$row[6]}</td>
+                                <td class='px-6 py-4'>{$row[7]}</td>
+                                <td class='px-6 py-4'>
+                                    <a href='UserDashboard.php?returnid={$row[0]}&userlogid=$userId'>
+                                        <button type='button' class='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>Return</button>
+                                    </a>
+                                </td>
+                            </tr>";
+                    }
+
+                    echo "</tbody></table>";
+                    ?>
+                </div>
+                
+
+            </div>
+
 
         </div>
     </div>

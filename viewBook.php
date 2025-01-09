@@ -5,6 +5,6 @@ include("dataClass.php");
 $viewid=$_GET['viewid'];
 
 $u=new data;
-$u->setconnection();
+$u->setConnection();
 $u->getbookdetail($viewid);
 ?>

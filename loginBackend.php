@@ -9,30 +9,27 @@ if ($loginEmail == null || $loginPassword == null) {
     $emailMsg = $loginEmail == null ? "Email is required" : "";
     $passMsg = $loginPassword == null ? "Password is required" : "";
 
-
     header("Location: login.php?emailMsg=$emailMsg&passMsg=$passMsg");
     exit();
 } else {
-    
     $obj = new data();
-    $obj->setconnection();
+    $obj->setConnection();
 
-    
+
     $isAdmin = $obj->check("admin", $loginEmail, $loginPassword);
-    if ($isAdmin) {
-    
+    if ($isAdmin !== false) {
         header("Location: adminDashboard.php?email=$loginEmail");
         exit();
     }
 
     $isUser = $obj->check("userdata", $loginEmail, $loginPassword);
-    if ($isUser) {
-        
+    if ($isUser !== false) {
+        $_SESSION["userId"] = $isUser;
+
         header("Location: userDashboard.php?email=$loginEmail");
         exit();
     }
 
-    
     $errorMsg = "Invalid email or password";
     header("Location: login.php?errorMsg=$errorMsg");
     exit();

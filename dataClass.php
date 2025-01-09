@@ -25,10 +25,14 @@ class data extends db{
         //echo "Working";
     }
     function check($tableName, $email, $password) {
-        $q = "SELECT * FROM $tableName WHERE email='$email' AND password='$password'";
+        $q = "SELECT id FROM $tableName WHERE email='$email' AND password='$password'";
         $result = $this->connection->query($q);
     
-        return $result-> rowCount() > 0;  
+        if($result-> rowCount() > 0){
+            $user=$result->fetch();
+            return $user['id'];
+        }  
+        return false;
     }
     
 
@@ -111,18 +115,14 @@ class data extends db{
         }
 
         foreach($recordSetss->fetchAll() as $row) {
-            $bookname=$row['bookname'];
+            $bookname=$row['bookName'];
         }
 
-        if($usertype=="student"){
-            $days=7;
-        }
-        if($usertype=="teacher"){
-            $days=21;
-        }
+        $days=10;//Maximum number of days
 
 
-        $q="INSERT INTO requestbook (id,userid,bookid,username,usertype,bookname,issuedays)VALUES('','$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
+        $q="INSERT INTO requestbook (id,userid,bookid,userName,userType,bookName,issueDays)
+        VALUES('','$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
 
         if($this->connection->exec($q)) {
             header("Location:userDashboard.php?userlogid=$userid");
@@ -160,21 +160,29 @@ class data extends db{
 
     }
     function issuebook($book, $user, $days, $getdate, $returnDate) {
+        /*echo "User: " . $user . "<br>";
+        echo "Book: " . $book . "<br>";
+        exit;*/
+
+
         
-        $q = "SELECT * FROM book WHERE bookName = '$book'";
+        $q = "SELECT * FROM book WHERE id = '$book'";
         $recordSetss = $this->connection->query($q);
         $bookDetails = $recordSetss->fetch();
     
-        $q = "SELECT * FROM userdata WHERE name = '$user'";
+        $q = "SELECT * FROM userdata WHERE id ='$user'";
         $recordSet = $this->connection->query($q);
         $userDetails = $recordSet->fetch();
     
+       //header("Location: issueBook.php?msg=done&username=" . urlencode($userDetails['name']));
 
         if ($userDetails) {
             $issueid = $userDetails['id'];
             $issuetype = $userDetails['type'];
+            //header("Location: adminDashboard.php?msg=done&username=" . urlencode($bookDetails['bookName']));
     
             if ($bookDetails && $bookDetails['bookAva'] > 0) {
+               
             
                 $newbookava = $bookDetails['bookAva'] - 1;
                 $newbookrent = $bookDetails['bookRent'] + 1;
@@ -183,7 +191,7 @@ class data extends db{
     
             
                 $q = "INSERT INTO issuebook (userId, issueName, issueBook, issueType, issueDays, issueDate, issueReturn, fine) 
-                      VALUES ('$issueid', '$user', '$book', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
+                      VALUES ('$issueid', '{$userDetails['name']}', '{$bookDetails['bookName']}', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
                 if ($this->connection->exec($q)) {
                     header("Location: adminDashboard.php?msg=done");
                 } else {
@@ -200,11 +208,11 @@ class data extends db{
     }
     
     function issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$redid){
-        $this->$book= $book;
-        $this->$userselect=$userselect;
-        $this->$days=$days;
-        $this->$getdate=$getdate;
-        $this->$returnDate=$returnDate;
+        $this->book= $book;
+        $this->userselect=$userselect;
+        $this->days=$days;
+        $this->getdate=$getdate;
+        $this->returnDate=$returnDate;
 
 
         $q="SELECT * FROM book where bookName='$book'";
@@ -260,6 +268,38 @@ class data extends db{
         }
 
     }
+    function getissuebook($userloginid) {
+        $q = "SELECT * FROM issuebook WHERE userId='$userloginid'";
+        $recordSetss = $this->connection->query($q);
+    
+        $data = $recordSetss->fetchAll(); 
+        if (empty($data)) {
+            return [];
+        }
+    
+        $currentDate =new DateTime(); 
+    
+        foreach ($data as $row) {
+            $issuereturn = DateTime::createFromFormat('d/m/Y', $row['issueReturn']);
+            $fine = $row['fine'];
+            $newfine = $fine;
+    
+    
+            if ($issuereturn < $currentDate) {
+                $daysOverdue = $currentDate->diff($issuereturn)->days; 
+                $newfine = $fine + ($daysOverdue * 10); //10 units per day
+                $updateQuery = "UPDATE issuebook SET fine='$newfine' WHERE userId='$userloginid'";
+                $this->connection->exec($updateQuery);
+            }
+        }
+    
+    
+        $q = "SELECT * FROM issuebook WHERE userId='$userloginid'";
+        $result = $this->connection->query($q);
+    
+        return $result;
+    }
+    
 
 
     

@@ -111,7 +111,7 @@
                 
                <?php
                 $u=new data;
-                $u->setconnection();
+                $u->setConnection();
                 $recordset=$u->getbook();
 
                $table="<table class='min-w-full bg-white border border-gray-200'>
@@ -156,7 +156,7 @@
                 <?php
                 
                 $u = new data;
-                $u->setconnection();
+                $u->setConnection();
                 $recordset = $u->requestbookdata();
 
                 
@@ -198,7 +198,7 @@
                 
                <?php
                 $u=new data;
-                $u->setconnection();
+                $u->setConnection();
                 $recordset=$u->userdata();
 
                $table="<table class='min-w-full bg-white border border-gray-200'>
@@ -233,7 +233,7 @@
                         
                             <?php
                             $u = new data;
-                            $u->setconnection();
+                            $u->setConnection();
                             $recordset = $u->userdata();
                             foreach ($recordset as $row) {
                                 echo "<option value='{$row['id']}'>{$row['name']}</option>";
@@ -246,7 +246,7 @@
                         <select name="book" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
                             <?php
                             $u = new data;
-                            $u->setconnection();
+                            $u->setConnection();
                             $recordset= $u->getbooks(); // Get list of books from database
                             foreach ($recordset as $row) {
                                 echo "<option value='{$row['id']}'>{$row['bookName']}</option>";
@@ -279,7 +279,7 @@
                <?php
                
                 $u=new data;
-                $u->setconnection();
+                $u->setConnection();
                 $recordset=$u->issuereport();
 
                $table="<table class='min-w-full bg-white border border-gray-200'>
@@ -298,8 +298,8 @@
                     $table.="<td>$row[2]</td>";
                     $table.="<td>$row[3]</td>";
                     $table.="<td>$row[6]</td>";
-                    $table.="<td>$row[9]</td>";
-                    $table.="<td>$row[9]</td>";
+                    $table.="<td>$row[7]</td>";
+                    $table.="<td>$row[8]</td>";
                     $table.= "<td>$row[4]</td>";
                    // $table.="<td><a href='adminDashboard.php?viewid=$row[0]'><button type='button'>View BOOK </button></a></td>";
                     $table.= "</tr>";

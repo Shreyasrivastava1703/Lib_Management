@@ -36,7 +36,9 @@ $recordSet = $obj->connection->query($q);
             </thead>
             <tbody>
                 <?php
+                $userId=$_SESSION['userId'];
                 foreach ($recordSet as $row) {
+                    $bookId=$row['id'];
                     echo "<tr class='border-b border-gray-200'>";
                     echo "<td class='px-6 py-4'><img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' width='100' height='100' class='border border-gray-300'></td>";
                     echo "<td class='px-6 py-4'>{$row['bookName']}</td>";
@@ -44,7 +46,7 @@ $recordSet = $obj->connection->query($q);
                     echo "<td class='px-6 py-4'>{$row['branch']}</td>";
                     echo "<td class='px-6 py-4'>{$row['price']}</td>";
                     echo "<td class='px-6 py-4'>
-                            <a href='requestBook.php' class='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>
+                            <a href='requestBook.php?userId=$userId&bookId=$bookId' class='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>
                                 Request Book
                             </a>
                           </td>";
