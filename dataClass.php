@@ -159,64 +159,49 @@ class data extends db{
         return $data;
 
     }
-    function issuebook($book,$user,$days,$getdate,$returnDate){
-        $this->book= $book;
-        $this->user=$user;
-        $this->days=$days;
-        $this->getdate=$getdate;
-        $this->returnDate=$returnDate;
-
-
-        $q="SELECT * FROM book where bookName='$book'";
-        $recordSetss=$this->connection->query($q);
-        
-
-        $q="SELECT * FROM userdata where name='$user'";
-        $recordSet=$this->connection->query($q);
-        $result=$recordSet->rowCount();
-        
-        if ($result > 0) {
-
-            foreach($recordSet->fetchAll() as $row) {
-                $issueid=$row['id'];
-                $issuetype=$row['type'];
-
-            }
-            foreach($recordSetss->fetchAll() as $row) {
-                $bookid=$row['id'];
-                $bookname=$row['bookName'];
-
-                    $newbookava=$row['bookAva']-1;
-                    $newbookrent=$row['bookRent']+1;
-            }
-
-        
-            $q="UPDATE book SET bookAva='$newbookava', bookRent='$newbookrent' where id='$bookid'";
-            if($this->connection->exec($q)){
-
-                $q="INSERT INTO issuebook (userId,issueName,issueBook,issueType,issueDays,issueDate,issueReturn,fine)VALUES('$issueid','$user','$book','$issuetype','$days','$getdate','$returnDate','0')";
-
-                if($this->connection->exec($q)) {
-                    header("Location:adminDashboard.php?msg=done");
+    function issuebook($book, $user, $days, $getdate, $returnDate) {
+        // Fetch the book details
+        $q = "SELECT * FROM book WHERE bookName = '$book'";
+        $recordSetss = $this->connection->query($q);
+        $bookDetails = $recordSetss->fetch();
+    
+        // Fetch the user details
+        $q = "SELECT * FROM userdata WHERE name = '$user'";
+        $recordSet = $this->connection->query($q);
+        $userDetails = $recordSet->fetch();
+        var_dump($userDetails);
+    
+        // Check if user exists
+        if ($userDetails) {
+            $issueid = $userDetails['id'];
+            $issuetype = $userDetails['type'];
+    
+            // Check if the book is available
+            if ($bookDetails && $bookDetails['bookAva'] > 0) {
+                // Update book availability
+                $newbookava = $bookDetails['bookAva'] - 1;
+                $newbookrent = $bookDetails['bookRent'] + 1;
+                $q = "UPDATE book SET bookAva = '$newbookava', bookRent = '$newbookrent' WHERE id = '{$bookDetails['id']}'";
+                $this->connection->exec($q);
+    
+                // Issue the book
+                $q = "INSERT INTO issuebook (userId, issueName, issueBook, issueType, issueDays, issueDate, issueReturn, fine) 
+                      VALUES ('$issueid', '$user', '$book', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
+                if ($this->connection->exec($q)) {
+                    header("Location: adminDashboard.php?msg=done");
+                } else {
+                    header("Location: adminDashboard.php?msg=fail");
                 }
-        
-                else {
-                    header("Location:adminDashboard.php?msg=fail");
-                }
+            } else {
+                // Book not available
+                header("Location: adminDashboard.php?msg=Book unavailable");
             }
-            else{
-               header("Location:adminDashboard.php?msg=fail");
-            }
-
-
+        } else {
+            // User not found
+            header("Location: adminDashboard.php?msg=Invalid Credentials");
         }
-
-        else {
-            header("location: adminDashboard.php?msg=Invalid Credentials ");
-        }
-
-
     }
+    
     function issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$redid){
         $this->$book= $book;
         $this->$userselect=$userselect;

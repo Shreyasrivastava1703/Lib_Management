@@ -263,7 +263,7 @@
                         <input type="date" name="return_date" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
                     </div>-->
                     <label>Days</label> 
-                    <input type="number" name="days"/>
+                    <input type="number" name="days" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Issue Book</button>
                 </form>
             </div>
