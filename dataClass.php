@@ -28,7 +28,7 @@ class data extends db{
         $q = "SELECT * FROM $tableName WHERE email='$email' AND password='$password'";
         $result = $this->connection->query($q);
     
-        return $result-> rowCount() > 0; // Returns true if credentials are valid
+        return $result-> rowCount() > 0;  
     }
     
 
@@ -39,7 +39,7 @@ class data extends db{
         $this->pass=$pass;
         $this->type=$type;
         
-        $q="INSERT INTO userdata(id,name,email,password,type) VALUES ('','$name','$email','$pass','$type')";//insert query
+        $q="INSERT INTO userdata(id,name,email,password,type) VALUES ('','$name','$email','$pass','$type')";
         if( $this->connection->exec($q)){
             header("Location:adminDashboard.php?msg=New Add Done");
         }
@@ -147,10 +147,10 @@ class data extends db{
         if($this->connection->exec($q)){
     
             
-           header("Location:admin_service_dashboard.php?msg=done");
+           header("Location:adminDashboard.php?msg=done");
         }
         else{
-           header("Location:admin_service_dashboard.php?msg=fail");
+           header("Location:adminDshboard.php?msg=fail");
         }
     }*/
     function getbooks(){
@@ -160,31 +160,28 @@ class data extends db{
 
     }
     function issuebook($book, $user, $days, $getdate, $returnDate) {
-        // Fetch the book details
+        
         $q = "SELECT * FROM book WHERE bookName = '$book'";
         $recordSetss = $this->connection->query($q);
         $bookDetails = $recordSetss->fetch();
     
-        // Fetch the user details
         $q = "SELECT * FROM userdata WHERE name = '$user'";
         $recordSet = $this->connection->query($q);
         $userDetails = $recordSet->fetch();
-        var_dump($userDetails);
     
-        // Check if user exists
+
         if ($userDetails) {
             $issueid = $userDetails['id'];
             $issuetype = $userDetails['type'];
     
-            // Check if the book is available
             if ($bookDetails && $bookDetails['bookAva'] > 0) {
-                // Update book availability
+            
                 $newbookava = $bookDetails['bookAva'] - 1;
                 $newbookrent = $bookDetails['bookRent'] + 1;
                 $q = "UPDATE book SET bookAva = '$newbookava', bookRent = '$newbookrent' WHERE id = '{$bookDetails['id']}'";
                 $this->connection->exec($q);
     
-                // Issue the book
+            
                 $q = "INSERT INTO issuebook (userId, issueName, issueBook, issueType, issueDays, issueDate, issueReturn, fine) 
                       VALUES ('$issueid', '$user', '$book', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
                 if ($this->connection->exec($q)) {
@@ -193,11 +190,11 @@ class data extends db{
                     header("Location: adminDashboard.php?msg=fail");
                 }
             } else {
-                // Book not available
+            
                 header("Location: adminDashboard.php?msg=Book unavailable");
             }
         } else {
-            // User not found
+        
             header("Location: adminDashboard.php?msg=Invalid Credentials");
         }
     }

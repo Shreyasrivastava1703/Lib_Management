@@ -9,11 +9,11 @@
 <body class="font-sans bg-gray-100 text-gray-900">
     <?php
     
-// Start session to retrieve user data
     
 
     include("dataClass.php");
-    // Retrieve user ID from session
+    //userid get karenge..
+    //shyd login backend se
     $userloginid=$_SESSION["userId"] = $_GET['userid'];
     
     if (!$userloginid) {
@@ -31,7 +31,7 @@
         }
     ?>
     <div class="flex flex-col md:flex-row min-h-screen">
-        <!-- Sidebar -->
+        <!-- Side -->
         <div class="w-full md:w-1/4 bg-white shadow-lg px-4 py-6">
             <h2 class="text-2xl font-semibold mb-6">User Dashboard</h2>
             <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('myaccount')">MY Account</button> 
@@ -75,10 +75,10 @@
         </div>
     </div>
 <script>
-    console.log('Script loaded');  // Check if the script is loaded
+    console.log('Script loaded');  
 
     function openSection(sectionId) {
-        console.log('openSection called');  // Check if function is called
+        console.log('openSection called'); 
         document.querySelectorAll('.hidden-section').forEach(div => div.classList.add('hidden'));
         document.getElementById(sectionId).classList.remove('hidden');
     }

@@ -1,11 +1,11 @@
 <?php
 include("dataClass.php");
-// Initialize the connection
+
 $obj = new data();
 $obj->setconnection();
 
-// Fetch all books from the database
-$q = "SELECT * FROM book"; // Assuming 'book' table contains book details
+
+$q = "SELECT * FROM book"; 
 $recordSet = $obj->connection->query($q);
 ?>
 

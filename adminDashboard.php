@@ -154,12 +154,12 @@
                 <h3 class="text-2xl font-semibold mb-4">Book Request Approve</h3>
 
                 <?php
-                // Create an instance of the `data` class and fetch book request data
+                
                 $u = new data;
                 $u->setconnection();
                 $recordset = $u->requestbookdata();
 
-                // Initialize the table structure
+                
                 $table = "<table class='min-w-full bg-white border border-gray-200'>
                 <tr>
                     <th class='border px-4 py-2'>Person Name</th>
@@ -168,13 +168,13 @@
                     <th class='border px-4 py-2'>Days</th>
                     <th class='border px-4 py-2'>Approve</th>
                 </tr>";
-                // Loop through the fetched records and populate the table rows
+                
                 foreach ($recordset as $row) {
                     $table .= "<tr>";
-                    $table .= "<td class='border px-4 py-2'>{$row[3]}</td>"; // Person Name
-                    $table .= "<td class='border px-4 py-2'>{$row[4]}</td>"; // Person Type
-                    $table .= "<td class='border px-4 py-2'>{$row[5]}</td>"; // Book Name
-                    $table .= "<td class='border px-4 py-2'>{$row[6]}</td>"; // Days
+                    $table .= "<td class='border px-4 py-2'>{$row[3]}</td>"; 
+                    $table .= "<td class='border px-4 py-2'>{$row[4]}</td>"; 
+                    $table .= "<td class='border px-4 py-2'>{$row[5]}</td>";
+                    $table .= "<td class='border px-4 py-2'>{$row[6]}</td>"; 
                     $table .= "<td class='border px-4 py-2'>
                     <a href='approvebookrequest.php?reqid={$row[0]}&book={$row[5]}&userselect={$row[3]}&days={$row[6]}'>
                         <button type='button' class='bg-blue-500 text-white px-4 py-2 rounded-lg'>Approve</button>
@@ -185,7 +185,7 @@
 
                 $table .= "</table>";
 
-                // Echo the constructed table
+                
                 echo $table;
                 ?>
             </div>
