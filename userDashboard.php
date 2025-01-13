@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="font-sans bg-gray-100 text-gray-900">
-    <?php
+<?php
     include("dataClass.php");
     if (isset($_SESSION['userId'])) {
         $userId = $_SESSION['userId'];
@@ -24,6 +15,16 @@
         echo "<div class='bg-red-100 text-red-800 border border-red-300 p-4 rounded-lg my-4 mx-4'>Action failed!</div>";
     }
     ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans bg-gray-100 text-gray-900">
+    
     <div class="flex flex-col md:flex-row min-h-screen">
         <div class="w-full md:w-1/4 bg-white shadow-lg px-4 py-6">
             <h2 class="text-2xl font-semibold mb-6">User Dashboard</h2>

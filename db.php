@@ -1,6 +1,6 @@
 <?php
 class db{
-      public $connection;
+      private $connection;
 
     function setConnection(){
         try{
