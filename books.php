@@ -4,7 +4,6 @@ include("dataClass.php");
 $obj = new data();
 $obj->setconnection();
 
-
 $q = "SELECT * FROM book"; 
 $recordSet = $obj->connection->query($q);
 ?>
@@ -17,44 +16,53 @@ $recordSet = $obj->connection->query($q);
     <title>Books</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="font-sans bg-gray-100 text-gray-900">
-    <div class="max-w-6xl mx-auto p-6">
-        <h1 class="text-3xl font-semibold mb-6">Available Books</h1>
-
-        <!-- Book Table -->
-        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-            <thead>
-                <tr class="bg-gray-200 text-gray-700">
-                    <th class="px-6 py-3 text-left">Image</th>
-                    <th class="px-6 py-3 text-left">Book Name</th>
-                    <th class="px-6 py-3 text-left">Author</th>
-                    <th class="px-6 py-3 text-left">Branch</th>
-                    <th class="px-6 py-3 text-left">Price</th>
-                    <th class="px-6 py-3 text-left"></th>
-      
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $userId=$_SESSION['userId'];
+<body class="bg-gradient-to-br from-violet-700 to-blue-600 text-white min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold">Library Books</h1>
+            <p class="mt-4 text-lg text-gray-200">
+                Explore our collection of books and immerse yourself in knowledge and stories.
+            </p>
+        </header>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <?php
+            if (isset($_SESSION['userId'])) {
+                $userId = $_SESSION['userId'];
                 foreach ($recordSet as $row) {
-                    $bookId=$row['id'];
-                    echo "<tr class='border-b border-gray-200'>";
-                    echo "<td class='px-6 py-4'><img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' width='100' height='100' class='border border-gray-300'></td>";
-                    echo "<td class='px-6 py-4'>{$row['bookName']}</td>";
-                    echo "<td class='px-6 py-4'>{$row['author']}</td>";
-                    echo "<td class='px-6 py-4'>{$row['branch']}</td>";
-                    echo "<td class='px-6 py-4'>{$row['price']}</td>";
-                    echo "<td class='px-6 py-4'>
-                            <a href='requestBook.php?userId=$userId&bookId=$bookId' class='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>
+                    $bookId = $row['id'];
+                    echo "
+                    <div class='bg-white text-gray-800 rounded-lg shadow-lg overflow-hidden'>
+                        <img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' class='w-full h-48 object-cover'>
+                        <div class='p-4'>
+                            <h2 class='text-lg font-semibold mb-2'>{$row['bookName']}</h2>
+                            <p class='text-sm text-gray-600 mb-1'>Author: {$row['author']}</p>
+                            <p class='text-sm text-gray-600 mb-1'>Branch: {$row['branch']}</p>
+                            <p class='text-lg font-bold text-blue-600 mb-4'>₹{$row['price']}</p>
+                            <a href='requestBook.php?userId=$userId&bookId=$bookId' class='block text-center py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition'>
                                 Request Book
                             </a>
-                          </td>";
-                    echo "</tr>";
+                        </div>
+                    </div>";
                 }
-                ?>
-            </tbody>
-        </table>
+            } else {
+                foreach ($recordSet as $row) {
+                    echo "
+                    <div class='bg-white text-gray-800 rounded-lg shadow-lg overflow-hidden'>
+                        <img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' class='w-full h-48 object-cover'>
+                        <div class='p-4'>
+                            <h2 class='text-lg font-semibold mb-2'>{$row['bookName']}</h2>
+                            <p class='text-sm text-gray-600 mb-1'>Author: {$row['author']}</p>
+                            <p class='text-sm text-gray-600 mb-1'>Branch: {$row['branch']}</p>
+                            <p class='text-lg font-bold text-blue-600 mb-4'>₹{$row['price']}</p>
+                            <a href='login.php' class='block text-center py-2 px-4 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition'>
+                                Log in to Request Book
+                            </a>
+                        </div>
+                    </div>";
+                }
+            }
+            ?>
+        </div>
     </div>
 </body>
 </html>

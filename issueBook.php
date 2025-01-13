@@ -22,3 +22,4 @@ else{
 }*/
 
 $obj->issuebook($book,$user,$days,$getdate,$returnDate);
+?>

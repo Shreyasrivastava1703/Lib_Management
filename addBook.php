@@ -19,3 +19,4 @@ if(move_uploaded_file($_FILES["bookphoto"]["tmp_name"],"uploads/" . $_FILES["boo
 }else{
     echo "File not uploaded";
 }
+?>

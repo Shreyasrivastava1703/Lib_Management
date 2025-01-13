@@ -16,26 +16,29 @@
             echo "<div class='bg-red-100 text-red-800 border border-red-300 p-4 rounded-lg my-4 mx-4'>Action failed!</div>";
         }
     ?>
-    <div class="flex flex-col md:flex-row min-h-screen">
-        <!-- Sidebar -->
-        <div class="w-full md:w-1/4 bg-white shadow-lg px-4 py-6">
-            <h2 class="text-2xl font-semibold mb-6">Admin Dashboard</h2>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('addbook')">Add Book</button> 
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('bookreport')">Book Report</button>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('bookrequestapprove')">Book Requests</button>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('addperson')">Add Student</button>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('studentrecord')">Student Report</button>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('issuebook')">Issue Book</button>
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('issuebookreport')">Issue Report</button>
-            <a href="index.php" class="w-full block text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4">Logout</a>
-        </div>
+<div class="flex flex-col md:flex-row min-h-screen">
+    
+    <div class="fixed top-0 left-0 h-full w-64 bg-gradient-to-r from-purple-600 to-violet-700 text-white shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-center text-white mb-8">Dashboard</h2>
+        <button onclick="openSection('addbook')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Add Book</b></button>
+        <button onclick="openSection('bookreport')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Book Report</b></button>
+        <button onclick="openSection('bookrequestapprove')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Book Requests</b></button>
+        <button onclick="openSection('addperson')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Add Student</b></button>
+        <button onclick="openSection('studentrecord')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Student Report</b></button>
+        <button onclick="openSection('issuebook')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Issue Book</b></button>
+        <button onclick="openSection('issuebookreport')" class="w-full py-3 mb-4 text-center bg-purple-700 hover:bg-purple-800 text-white rounded-lg"><b>Issue Report</b></button>
+        <a href="index.php" class="w-full py-3 mt-4 text-center bg-red-500 hover:bg-red-700 text-white rounded-lg"><b>Logout</b></a>
+    </div>
 
 
-        <div class="w-full md:w-3/4 bg-gray-50 p-6">
+
+
+
+        <div class="w-full md:w-3/4 bg-gray-50 p-6 ml-64 ">
             <!-- add book -->
             <div id="addbook" class="hidden hidden-section">
-                <h3 class="text-2xl font-semibold mb-4">Add New Book</h3>
-                <form action="addBook.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <h3 class="text-2xl font-semibold mb-4 text-center">Add New Book</h3>
+                <form action="addBook.php" method="POST" enctype="multipart/form-data" class="space-y-4 max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
                     <div>
                         <label class="block font-medium">Book Name:</label>
                         <input type="text" name="bookname" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
@@ -75,9 +78,10 @@
                         <label class="block font-medium">Photo:</label>
                         <input type="file" name="bookphoto" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
                     </div>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Submit</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full">Submit</button>
                 </form>
             </div>
+
 
             <!-- add person -->
             <div id="addperson" class="hidden hidden-section">
@@ -142,12 +146,6 @@
                 
                
             </div>
-            <!-- book detail-->
-
-
-
-            
-
             <!-- Book Request Approve -->
 
             <div id="bookrequestapprove" class="hidden hidden-section">
@@ -316,10 +314,9 @@
 
     <script>
         function openSection(sectionId) {
-            document.querySelectorAll('.hidden-section').forEach(div => div.classList.add('hidden')); //hide all
-            document.getElementById(sectionId).classList.remove('hidden');//show selected(id)
+            document.querySelectorAll('.hidden-section').forEach(div => div.classList.add('hidden'));//hide all
+            document.getElementById(sectionId).classList.remove('hidden');//show the selected one
         }
-
     </script>
 </body>
 </html>

@@ -25,7 +25,6 @@
     }
     ?>
     <div class="flex flex-col md:flex-row min-h-screen">
-        <!-- Side -->
         <div class="w-full md:w-1/4 bg-white shadow-lg px-4 py-6">
             <h2 class="text-2xl font-semibold mb-6">User Dashboard</h2>
             <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4" onclick="openSection('myaccount')">MY Account</button> 
@@ -61,10 +60,15 @@
 
         
             </div>
+
+            <!--book request-->
             <div id="bookrequest" class="hidden hidden-section">
                 <a href="books.php"> REQUEST A BOOK</ahref>
 
             </div>
+
+
+            <!--book report-->
             <div id="bookreport" class="hidden hidden-section">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                 <Button class="bg-green-500 text-white px-4 py-2 rounded-md mb-4">BOOK RECORD</Button>
