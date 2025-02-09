@@ -4,14 +4,13 @@ include("dataClass.php");
 
 
 $request=$_GET['reqid'];
-$book=$_GET['book'];
-$userselect= $_GET['userselect'];
+$bookid=$_GET['book'];
+$userid= $_GET['userselect'];
 $getdate= date("d/m/Y");
 $days= $_GET['days'];
 
 $returnDate=Date('d/m/Y', strtotime('+'.$days.'days'));
 
 $obj=new data();
-$obj->setConnection();
-$obj->issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$request);
+$obj->issuebookapprove($bookid,$userid,$days,$getdate,$returnDate,$request);
 ?>

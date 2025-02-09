@@ -8,6 +8,6 @@ $addpass=$_POST['addpass'];
 $type=$_POST['type'];
 
 $obj=new data();
-$obj->setConnection();
+//$obj->setConnection();
 $obj->addnewuser($addname,$addemail,$addpass,$type);
 ?>

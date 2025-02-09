@@ -19,39 +19,46 @@ class data extends db{
     private $returnDate;
     private $id;
     
+    private $connection;
 
-   
-   function __construct(){//constructor
-        //echo "Working";
+    public function __construct() {
+        parent::setConnection();
+        $this->connection=$this->getConnection();//either we can make this or we can directly call setconnection after making new object or here in thie code we can call getconnection
+
     }
     function check($tableName, $email, $password) {
         $q = "SELECT id FROM $tableName WHERE email='$email' AND password='$password'";
         $result = $this->connection->query($q);
     
-        if($result-> rowCount() > 0){
-            $user=$result->fetch();
+        if($result->num_rows> 0){
+            $user=$result->fetch_assoc();
             return $user['id'];
         }  
         return false;
     }
     
 
-    function addnewuser($name,$email,$pass,$type){
-
-        $this->name=$name;
-        $this->email=$email;
-        $this->pass=$pass;
-        $this->type=$type;
-        
-        $q="INSERT INTO userdata(id,name,email,password,type) VALUES ('','$name','$email','$pass','$type')";
-        if( $this->connection->exec($q)){
-            header("Location:adminDashboard.php?msg=New Add Done");
-        }
-        else{
-            header("Location:adminDashboard.php?msg=Register Fail");
-        }
+    function addnewuser($name, $email, $pass, $type) {
+        $this->name = $name;
+        $this->email = $email;
+        $this->pass = $pass;
+        $this->type = $type;
     
+        $hashedPassword = password_hash($pass, PASSWORD_DEFAULT);
+    
+        $q = "INSERT INTO userdata (id, name, email, password, type) VALUES ('', ?, ?, ?, ?)";
+    
+        $stmt = $this->connection->prepare($q);// whyyy
+    
+        $stmt->bind_param("ssss", $name, $email, $hashedPassword, $type);// whyy
+    
+        if ($stmt->execute()) {
+            header("Location: adminDashboard.php?msg=done");
+        } else {
+            header("Location: adminDashboard.php?msg=fail");
+        }
     }
+    
     function addbook($bookpic, $bookname, $bookdetail, $bookauthor, $bookpub, $branch, $bookprice, $bookquantity){
         $this->bookpic=$bookpic;
         $this->bookname=$bookname;
@@ -64,11 +71,11 @@ class data extends db{
 
 
         $q="INSERT INTO book(id,bookPic,bookName,bookDetail,author,publisher,branch,price,quantity,bookAva,bookRent) VALUES ('','$bookpic','$bookname','$bookdetail','$bookauthor','$bookpub','$branch','$bookprice','$bookquantity','$bookquantity',0)";
-        if( $this->connection->exec($q)){
-            header("Location:adminDashboard.php?msg=Done");
+        if( $this->connection->query($q)){
+            header("Location:adminDashboard.php?msg=done");
         }
         else{
-            header("Location:adminDashboard.php?msg=Fail");
+            header("Location:adminDashboard.php?msg=fail");
         }
     }
     function getbook(){
@@ -79,27 +86,74 @@ class data extends db{
     function getbookdetail($bookid){
         $q="SELECT * FROM book WHERE id='$bookid'";
         $data=$this->connection->query($q);
-        return $data;
+        return $data->fetch_all(MYSQLI_ASSOC);
     }
     function userdata(){
         $q= "SELECT * FROM userdata";
         $data=$this->connection->query($q);
-        return $data;
+        return $data->fetch_all(MYSQLI_ASSOC);
+    }
+    function userdetail($userId){
+        $q="SELECT * FROM userdata WHERE id='$userId'";
+        $data=$this->connection->query($q);
+        return $data->fetch_assoc();
+
     }
     function issuereport(){
         $q= "SELECT * FROM issuebook";
         $data=$this->connection->query($q);
-        return $data;
+        return $data->fetch_all();
     }
     function requestbookdata(){
         $q="SELECT * FROM requestbook ";
         $data=$this->connection->query($q);
-        return $data;
+        return $data->fetch_all(MYSQLI_ASSOC);
     }
-    function userdetail($id){
-        $q="SELECT * FROM userdata WHERE id ='$id'";
-        $data=$this->connection->query($q);
-        return $data;
+    function issuebookapprove($bookid, $userid, $days, $getdate, $returnDate, $redid) {
+        $this->bookid = $bookid;
+        $this->userid = $userid;
+        $this->days = $days;
+        $this->getdate = $getdate;
+        $this->returnDate = $returnDate;
+    
+        $q = "SELECT * FROM book WHERE id='$bookid'";
+        $recordSetss = $this->connection->query($q);
+    
+        $q = "SELECT * FROM userdata WHERE id='$userid'";
+        $recordSet = $this->connection->query($q);
+    
+        if ($recordSet->num_rows > 0 && $recordSetss->num_rows > 0) {
+            $row = $recordSet->fetch_assoc();
+            $userselect = $row['name'];
+            $issuetype = $row['type'];
+    
+            $row = $recordSetss->fetch_assoc();
+            $bookname = $row['bookName'];
+            $newbookava = $row['bookAva'] - 1;
+            $newbookrent = $row['bookRent'] + 1;
+    
+            $q = "UPDATE book SET bookAva='$newbookava', bookRent='$newbookrent' WHERE id='$bookid'";
+            if ($this->connection->query($q)) {
+
+                $q = "INSERT INTO issuebook (userId, issueName, issueBook, issueType, issueDays, issueDate, issueReturn, fine) 
+                      VALUES ('$userid', '$userselect', '$bookname', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
+                if ($this->connection->query($q)) {
+                    $q = "DELETE FROM requestbook WHERE id='$redid'";
+                    $this->connection->query($q);
+                    header("Location: adminDashboard.php?msg=done");
+                    exit();
+                } else {
+                    header("Location: adminDashboard.php?msg=fail");
+                    exit();
+                }
+            } else {
+                header("Location: adminDashboard.php?msg=fail");
+                exit();
+            }
+        } else {
+            header("location: index.php?msg=Invalid Credentials");
+            exit();
+        }
     }
 
     function requestbook($userid,$bookid){
@@ -109,12 +163,12 @@ class data extends db{
         $q="SELECT * FROM userdata where id='$userid'";
         $recordSet=$this->connection->query($q);
 
-        foreach($recordSet->fetchAll() as $row) {
+        foreach($recordSet->fetch_all() as $row) {
             $username=$row['name'];
             $usertype=$row['type'];
         }
 
-        foreach($recordSetss->fetchAll() as $row) {
+        foreach($recordSetss->fetch_all() as $row) {
             $bookname=$row['bookName'];
         }
 
@@ -124,7 +178,7 @@ class data extends db{
         $q="INSERT INTO requestbook (id,userid,bookid,userName,userType,bookName,issueDays)
         VALUES('','$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
 
-        if($this->connection->exec($q)) {
+        if($this->connection->query($q)) {
             header("Location:userDashboard.php?userlogid=$userid");
         }
 
@@ -135,144 +189,59 @@ class data extends db{
     }
     function deleteUserData($id){
         $q="DELETE FROM userdata WHERE id='$id'";
-        if($this->connection->exec($q)) {
-            header("Loaction:adminDashboard.php?msg=Done");
+        if($this->connection->query($q)) {
+            header("Location:adminDashboard.php?msg=done");
         }
         else{
-            header("Loaction:adminDashboard.php?msg=Fail");
+            header("Location:adminDashboard.php?msg=fail");
         }
     }
-    /*function deletebook($id){
-        $q="DELETE from book where id='$id'";
-        if($this->connection->exec($q)){
-    
-            
-           header("Location:adminDashboard.php?msg=done");
-        }
-        else{
-           header("Location:adminDshboard.php?msg=fail");
-        }
-    }*/
     function getbooks(){
         $q="SELECT * FROM book WHERE bookAva!=0";
         $data=$this->connection->query($q);
-        return $data;
+        return $data->fetch_all();
 
     }
     function issuebook($book, $user, $days, $getdate, $returnDate) {
-        /*echo "User: " . $user . "<br>";
-        echo "Book: " . $book . "<br>";
-        exit;*/
-
-
-        
         $q = "SELECT * FROM book WHERE id = '$book'";
-        $recordSetss = $this->connection->query($q);
-        $bookDetails = $recordSetss->fetch();
+        $bookResult = $this->connection->query($q);
+        $bookDetails = $bookResult->fetch_assoc();
     
-        $q = "SELECT * FROM userdata WHERE id ='$user'";
-        $recordSet = $this->connection->query($q);
-        $userDetails = $recordSet->fetch();
+        $q = "SELECT * FROM userdata WHERE id = '$user'";
+        $userResult = $this->connection->query($q);
+        $userDetails = $userResult->fetch_assoc(); 
     
-       //header("Location: issueBook.php?msg=done&username=" . urlencode($userDetails['name']));
-
-        if ($userDetails) {
-            $issueid = $userDetails['id'];
-            $issuetype = $userDetails['type'];
-            //header("Location: adminDashboard.php?msg=done&username=" . urlencode($bookDetails['bookName']));
-    
-            if ($bookDetails && $bookDetails['bookAva'] > 0) {
-               
-            
+        if ($userDetails && $bookDetails) {
+            if ($bookDetails['bookAva'] > 0) {
                 $newbookava = $bookDetails['bookAva'] - 1;
                 $newbookrent = $bookDetails['bookRent'] + 1;
-                $q = "UPDATE book SET bookAva = '$newbookava', bookRent = '$newbookrent' WHERE id = '{$bookDetails['id']}'";
-                $this->connection->exec($q);
     
-            
+                $q = "UPDATE book SET bookAva = '$newbookava', bookRent = '$newbookrent' WHERE id = '$book'";
+                $this->connection->query($q);
+    
                 $q = "INSERT INTO issuebook (userId, issueName, issueBook, issueType, issueDays, issueDate, issueReturn, fine) 
-                      VALUES ('$issueid', '{$userDetails['name']}', '{$bookDetails['bookName']}', '$issuetype', '$days', '$getdate', '$returnDate', '0')";
-                if ($this->connection->exec($q)) {
+                      VALUES ('{$userDetails['id']}', '{$userDetails['name']}', '{$bookDetails['bookName']}', '{$userDetails['type']}', '$days', '$getdate', '$returnDate', '0')";
+                
+                if ($this->connection->query($q)) {
                     header("Location: adminDashboard.php?msg=done");
                 } else {
                     header("Location: adminDashboard.php?msg=fail");
                 }
             } else {
-            
                 header("Location: adminDashboard.php?msg=Book unavailable");
             }
         } else {
-        
             header("Location: adminDashboard.php?msg=Invalid Credentials");
         }
     }
     
-    function issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$redid){
-        $this->book= $book;
-        $this->userselect=$userselect;
-        $this->days=$days;
-        $this->getdate=$getdate;
-        $this->returnDate=$returnDate;
-
-
-        $q="SELECT * FROM book where bookName='$book'";
-        $recordSetss=$this->connection->query($q);
-
-        $q="SELECT * FROM userdata where name='$userselect'";
-        $recordSet=$this->connection->query($q);
-        $result=$recordSet->rowCount();
-
-        if ($result > 0) {
-
-            foreach($recordSet->fetchAll() as $row) {
-                $issueid=$row['id'];
-                $issuetype=$row['type'];
-            }
-            foreach($recordSetss->fetchAll() as $row) {
-                $bookid=$row['id'];
-                $bookname=$row['bookName'];
-
-                    $newbookava=$row['bookAva']-1;
-                     $newbookrent=$row['bookRent']+1;
-            }
-
-        
-            $q="UPDATE book SET bookAva='$newbookava', bookRent='$newbookrent' where id='$bookid'";
-            if($this->connection->exec($q)){
-
-                $q="INSERT INTO issuebook (userId,issueName,issueBook,issueType,issueDays,issueDate,issueReturn,fine)VALUES('$issueid','$userselect','$book','$issuetype','$days','$getdate','$returnDate','0')";
-
-                if($this->connection->exec($q)) {
-
-                    $q="DELETE from requestbook where id='$redid'";
-                    $this->connection->exec($q);
-                    header("Location:adminDashboard.php?msg=done");
-                }
-        
-                else {
-                    header("Location:adminDashboard.php?msg=fail");
-                }
-                }
-            else{
-               header("Location:adminDashboard.php?msg=fail");
-            }
-
-
-
-
-        }
-
-        else {
-            header("location: index.php?msg=Invalid Credentials");
-
-        }
-
-    }
+    
+   
     function getissuebook($userloginid) {
         $q = "SELECT * FROM issuebook WHERE userId='$userloginid'";
         $recordSetss = $this->connection->query($q);
     
-        $data = $recordSetss->fetchAll(); 
+        $data = $recordSetss->fetch_all(MYSQLI_ASSOC); 
         if (empty($data)) {
             return [];
         }
@@ -289,7 +258,7 @@ class data extends db{
                 $daysOverdue = $currentDate->diff($issuereturn)->days; 
                 $newfine = $fine + ($daysOverdue * 10); //10 units per day
                 $updateQuery = "UPDATE issuebook SET fine='$newfine' WHERE userId='$userloginid'";
-                $this->connection->exec($updateQuery);
+                $this->connection->query($updateQuery);
             }
         }
     
@@ -297,7 +266,7 @@ class data extends db{
         $q = "SELECT * FROM issuebook WHERE userId='$userloginid'";
         $result = $this->connection->query($q);
     
-        return $result;
+        return $result->fetch_all();
     }
     
 

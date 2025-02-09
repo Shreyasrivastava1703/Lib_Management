@@ -49,5 +49,8 @@
       </div>
     </div>
   </div>
+  <footer class="bg-black bg-opacity-80 text-white text-center py-4 mt-10">
+        <p>&copy; <?php echo date('Y'); ?> Library Management System | All Rights Reserved</p>
+    </footer>
 </body>
 </html>

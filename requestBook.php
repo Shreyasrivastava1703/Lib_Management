@@ -7,7 +7,5 @@ $bookid=$_GET['bookId'];
 
 
 $obj=new data();
-$obj->setConnection();
 $obj->requestbook($userid,$bookid);
-
 ?>

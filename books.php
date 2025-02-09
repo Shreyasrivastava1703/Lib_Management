@@ -2,10 +2,7 @@
 include("dataClass.php");
 
 $obj = new data();
-$obj->setconnection();
-
-$q = "SELECT * FROM book"; 
-$recordSet = $obj->connection->query($q);
+$recordSet=$obj->getbook();
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +29,7 @@ $recordSet = $obj->connection->query($q);
                     $bookId = $row['id'];
                     echo "
                     <div class='bg-white text-gray-800 rounded-lg shadow-lg overflow-hidden'>
-                        <img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' class='w-full h-48 object-cover'>
+                        <img src='uploads/{$row['bookPic']}' alt='{$row['bookName']}' class='w-full h-48 object-fit'>
                         <div class='p-4'>
                             <h2 class='text-lg font-semibold mb-2'>{$row['bookName']}</h2>
                             <p class='text-sm text-gray-600 mb-1'>Author: {$row['author']}</p>

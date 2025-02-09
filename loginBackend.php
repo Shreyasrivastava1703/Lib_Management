@@ -1,6 +1,6 @@
 <?php
 
-include("dataClass.php");
+include"dataClass.php";
 
 $loginEmail = $_GET['email'];
 $loginPassword = $_GET['password'];
@@ -13,11 +13,10 @@ if ($loginEmail == null || $loginPassword == null) {
     exit();
 } else {
     $obj = new data();
-    $obj->setConnection();
-
 
     $isAdmin = $obj->check("admin", $loginEmail, $loginPassword);
     if ($isAdmin !== false) {
+        $_SESSION["adminId"]=$isAdmin;
         header("Location: adminDashboard.php?email=$loginEmail");
         exit();
     }
