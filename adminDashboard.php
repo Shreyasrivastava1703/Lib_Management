@@ -254,7 +254,7 @@
 
             <!--student report-->
             <div id="studentrecord" class="hidden hidden-section">
-                <h3 class="text-2xl font-bold text-center mb-4">Student Record</h3>
+                <h3 class="text-2xl font-bold text-center mb-4">User Record</h3>
                 <?php
                     $u = new data;
                     $recordset = $u->userdata();
@@ -305,7 +305,7 @@
                     </div>
                     <div>
                         <label class="block font-medium">Select Book:</label>
-                        <select name="book" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                        <select name="book" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-black" required>
                             <?php
                             $u = new data;
                             $recordset= $u->getbooks(); // Get list of books from database
